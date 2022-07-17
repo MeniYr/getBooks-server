@@ -1,15 +1,21 @@
 const mongoose = require("mongoose");
-let hgjvf = {
-
-}
+const joi = require("joi");
 
 const createSchema = new mongoose.Schema({
     name: String,
     email: String,
+    isShareMail: {
+       type: Boolean,
+       default: false,
+    },
     password: String,
     address: String,
     date_of_birth: Date,
     phone: String,
+    isSharePhone: {
+        type: Boolean,
+        default: false,
+     },
     books_List: [],
     whish_List: [],
     msg: [{
@@ -37,6 +43,18 @@ const createSchema = new mongoose.Schema({
     },
     join_date: Date.now(),
 })
+exports.Usersmodel = mongoose.model("users", createSchema);
+
+exports.signUp_validate = (req_body) => {
+    let joiValidate = joi.object({
+        name: joi.string().min(1).required(),
+        email: joi.string().min(6).max(100).email().required(),
+        password: joi.string().min(8).max(100).required(),
+        address: joi.string().min(1).max(100).required(),
+        
+    })
+
+}
 
 
 
