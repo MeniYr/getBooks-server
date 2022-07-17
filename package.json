@@ -1,0 +1,14 @@
+{
+  "name": "l29-6.2",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
