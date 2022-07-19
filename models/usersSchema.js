@@ -11,7 +11,7 @@ const createSchema = new mongoose.Schema({
     },
     password: String,
     address: String,
-    date_of_birth: Date,
+    date_of_birth: String,
     phone: String,
     isSharePhone: {
         type: Boolean,
@@ -22,30 +22,52 @@ const createSchema = new mongoose.Schema({
     msg: [{
         userId: String,
         name: String,
-        date: Date.now(),
+        date: {
+            type: Date,
+            default: Date.now()
+        },
         msg: String,
+        isRead:{
+            type: Boolean,
+            default:false
+        },
     }],
     string_users_Bugs: [{
         userId: String,
-        date: Date.now(),
+        date: {
+            type: Date,
+            default: Date.now(),
+        },
         msg: String,
     }],
     string_System_Bugs: [{
-        date: Date.now(),
+        date: {
+            type: Date,
+            default: Date.now(),
+        },
         msg: String,
     }],
-    log_in: Date.now(),
-    log_out: Date.now(),
+    log_in: {
+        type: Date,
+        default: Date.now(),
+    },
+    log_out: {
+        type: Date,
+        default: Date.now(),
+    },
     connectingLog: [[]],
-    delivary_count: BigInt,
-    file: URL,
+    delivary_count: Number,
+    image: String,
     role: {
         type: String,
         default: "user",
     },
-    join_date: Date.now(),
+    join_date:{
+        type: Date,
+        default: Date.now(),
+    },
 })
-exports.Usersmodel = mongoose.model("users", createSchema);
+exports.UsersModel = mongoose.model("users", createSchema);
 
 exports.genToken = (_id, _role) => {
     const token = jwt.sign({ _id, _role }, "meni", { expiresIn: "60" })
@@ -58,7 +80,6 @@ exports.signUp_validate = (req_body) => {
         email: joi.string().min(6).max(100).email().required(),
         password: joi.string().min(8).max(100).required(),
         address: joi.string().min(1).max(100).required(),
-        file: Joi.link(),
         phone: joi.string().min(10).allow(""),
         isShareMail: joi.boolean().required(),
         isSharePhone: joi.boolean().required()

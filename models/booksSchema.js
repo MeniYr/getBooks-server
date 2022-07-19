@@ -4,7 +4,7 @@ const joi = require("joi");
 const createSchema = new mongoose.Schema({
     book_name: String,
     info: String,
-    file: URL,
+    image: String,
     date: Date,
     interested_user_id: [],
     Category_id: String,
@@ -17,9 +17,14 @@ const createSchema = new mongoose.Schema({
         default: false
     },
     owner_id: String, 
-    favoriteCount: BigInt,
+    favoriteCount: Number,
     rate: Number,
-    responses: []
+    responses: [{
+        isRead:{
+            type:Boolean,
+            default: false,
+        }
+    }]
 })
 
 exports.BooksSchema = mongoose.Model("book", createSchema);

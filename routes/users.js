@@ -1,8 +1,11 @@
 const express = require("express");
+const { UsersModel } = require("../models/usersSchema");
 const router = express.Router();
 
 router.get("/", (req,res)=>{
-    res.json({msg:"users work!"})
+    let user = new UsersModel();
+    // res.json({msg:user.get })
+    
 })
 
 
