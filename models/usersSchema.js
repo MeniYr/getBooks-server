@@ -27,9 +27,9 @@ const createSchema = new mongoose.Schema({
             default: Date.now()
         },
         msg: String,
-        isRead:{
+        isRead: {
             type: Boolean,
-            default:false
+            default: false
         },
     }],
     string_users_Bugs: [{
@@ -62,7 +62,7 @@ const createSchema = new mongoose.Schema({
         type: String,
         default: "user",
     },
-    join_date:{
+    join_date: {
         type: Date,
         default: Date.now(),
     },
@@ -70,7 +70,7 @@ const createSchema = new mongoose.Schema({
 exports.UsersModel = mongoose.model("users", createSchema);
 
 exports.genToken = (_id, _role) => {
-    const token = jwt.sign({ _id, _role }, "meni", { expiresIn: "60" })
+    const token = jwt.sign({ _id, _role }, "meni", { expiresIn: "60mins" })
     return token;
 }
 
@@ -80,7 +80,7 @@ exports.signUp_validate = (req_body) => {
         email: joi.string().min(6).max(100).email().required(),
         address: joi.string().min(5).max(100).required(),
         password: joi.string().min(8).max(100).required(),
-        phone: joi.string().min(10).allow("",null),
+        phone: joi.string().min(10).allow("", null),
         isShareMail: joi.boolean().required(),
         isSharePhone: joi.boolean().required()
     })
@@ -88,10 +88,12 @@ exports.signUp_validate = (req_body) => {
 }
 
 exports.signIn_validate = (req_body) => {
-    let joiValidate = joi.object({
-        email: joi.string().min(6).max(100).email().required(),
-        password: joi.string().min(8).max(100).required()
-    })
+    let joiValidate2 = joi.object({
+        email: joi.string().min(6).max(100),
+        password: joi.string().min(3).max(100).required()
+    });
+    return joiValidate2.validate(req_body);
+
 }
 
 

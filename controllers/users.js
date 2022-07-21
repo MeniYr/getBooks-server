@@ -1,7 +1,8 @@
-const { UsersModel, signUp_validate, signIn_validate } = require("../models/usersSchema");
-const bcript = require("bcrypt");
+const { UsersModel, signUp_validate, signIn_validate, genToken } = require("../models/usersSchema");
+const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
+const { auth } = require("../middleWares/auth");
 
 exports.getUsers = async (req, res) => {
     try {
@@ -9,6 +10,10 @@ exports.getUsers = async (req, res) => {
     } catch (err) {
         console.error(err.message);
     }
+}
+
+exports.checkToken = auth, async (req, res) => {
+    return res.json({status: "ok", role:req.tokenData.role})
 }
 
 exports.signUp = async (req, res) => {
@@ -30,6 +35,8 @@ exports.signUp = async (req, res) => {
     }
 
 }
+
+
 //upload user profile image
 exports.imgUpload = async (req, res) => {
     try {
@@ -42,53 +49,56 @@ exports.imgUpload = async (req, res) => {
             return res.status(400).json({ msg: "please send image file only with the type`s jpg or png" })
 
         // let savedPicName = "/users_img/" + req.params.idUser + path.extname(file.name);
-        let savedPicName = "/users_img/" + "62d8f4afa97d18c96a328dca" + path.extname(file.name);
+        let savedPicName = "/62d8f4afa97d18c96a328dca" + path.extname(file.name);
 
-        file.mv("C:\HTML\getsBooks_project\server\users_img", async function (err) {
+        file.mv("profilePic" + savedPicName, async function (err) {
             if (err) {
                 console.error(err)
                 return res.status(400).json({ msg: "picture are not valid" });
             }
 
-        //let data = await UsersModel.updateOne({ _id: req.params.idUser, user_id: req.tokenData._id }, { image: savedPicName })
-        let data = await UsersModel.updateOne({ _id: "62d8f4afa97d18c96a328dca" }, { image: savedPicName })
+            //let data = await UsersModel.updateOne({ _id: req.params.idUser, user_id: req.tokenData._id }, { image: savedPicName })
+            let data = await UsersModel.updateOne({ _id: "62d8f4afa97d18c96a328dca" }, { image: savedPicName })
 
             res.json({ msg: "file upload", data })
         })
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ msg: "server problem" })
-        }
-
-
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
     }
 
 
-exports.logIn = async (req, res) => {
-        let theMailExist = (await UsersModel.find({ email: { $eq: req.body.email } })).length > 0;
-        try {
-            console.log(theMailExist)
-            if (theMailExist) { res.status(409).json(theMailExist) }
-            else {
-                let user = await UsersModel.create(req.body)
-                await user.save()
-                user.password = await bcript.hash(req.body.password, 10)
-                user.password = "********"
-                res.json({ user })
-            }
-        } catch (e) {
-            console.error(e);
+}
+
+
+exports.logIn =  async(req, res) => {
+
+    try {
+        let loginValidation = signIn_validate(req.body);
+        if (loginValidation.error) {
+            console.error(loginValidation.error)
+            return res.status(401).json({ err_msg: "user / password not valid" })
         }
 
+        let theMailExist = await UsersModel.findOne({ email: req.body.email });
+        let theNameExist = await UsersModel.findOne({ name: req.body.name });
+        let user = theMailExist ? theMailExist : theNameExist;
+        const thePassExist = bcrypt.compare(req.body.password, user.password);
+
+        if (!(user && thePassExist))
+            return res.json({ msg: "wrong user or password" })
+
+        let ticket = genToken(thePassExist._id, thePassExist.role)
+        res.json({ ticket, user: { name: user.name, role: user.role } })
+    }
+    catch (e) {
+        console.error(e);
     }
 
+}
 
 
 
 
-// module.exports = {
-//     signUp,
-//     logIn
-// }
 
 
