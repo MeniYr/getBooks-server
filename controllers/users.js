@@ -30,7 +30,7 @@ exports.signUp = async (req, res) => {
     }
 
 }
-//upload profile image
+//upload user profile image
 exports.imgUpload = async (req, res) => {
     try {
         let file = req.files.myFile;
@@ -44,7 +44,7 @@ exports.imgUpload = async (req, res) => {
         // let savedPicName = "/users_img/" + req.params.idUser + path.extname(file.name);
         let savedPicName = "/users_img/" + "62d8f4afa97d18c96a328dca" + path.extname(file.name);
 
-        file.mv("C:\HTML\פרוייקט גמר\server\users_img", async function (err) {
+        file.mv("C:\HTML\getsBooks_project\server\users_img", async function (err) {
             if (err) {
                 console.error(err)
                 return res.status(400).json({ msg: "picture are not valid" });
