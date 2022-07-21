@@ -138,6 +138,25 @@ exports.updateUser = async (req, res) => {
 
 }
 
+exports.addMsg = async (req, res) => {
+    try {
+        //TODO add msg thruth json whith property msg
+        req.body.userId = req.tokenData._id;
+        // let date = new Date()
+        req.body.date = new Date()
+        // req.body.date = date.getDay()
+        console.log(req.body)
+
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { msg: req.body } })
+
+
+        res.status(200).json(data)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
 
 
 

@@ -15,6 +15,7 @@ router.put("/editUserInfo", auth, userControlle.userInfo)
 // for admin update
 router.put("/updateUser/:idEdit",authAdmin , userControlle.updateUser)
 
+router.post("/addMsg", auth,userControlle.addMsg)
 router.post("/imgUpload", userControlle.imgUpload)
 router.post("/checkToken", auth,userControlle.checkToken)
 
