@@ -1,12 +1,13 @@
 const express = require("express");
-const { UsersModel } = require("../models/usersSchema");
+const userControlle = require("../controllers/users");
 const router = express.Router();
 
-router.get("/", (req,res)=>{
-    let user = new UsersModel();
-    // res.json({msg:user.get })
-    
-})
+
+
+
+router.get("/",userControlle.getUsers)
+router.post("/signUp",userControlle.signUp)
+router.post("/imgUpload",userControlle.imgUpload)
 
 
 module.exports = router;

@@ -78,9 +78,9 @@ exports.signUp_validate = (req_body) => {
     let joiValidate = joi.object({
         name: joi.string().min(1).required(),
         email: joi.string().min(6).max(100).email().required(),
+        address: joi.string().min(5).max(100).required(),
         password: joi.string().min(8).max(100).required(),
-        address: joi.string().min(1).max(100).required(),
-        phone: joi.string().min(10).allow(""),
+        phone: joi.string().min(10).allow("",null),
         isShareMail: joi.boolean().required(),
         isSharePhone: joi.boolean().required()
     })

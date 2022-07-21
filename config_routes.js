@@ -1,13 +1,15 @@
-const indexR = require("./index");
-const usersR = require("./users");
-const booksR = require("./books");
-const catR = require("./categories");
+const indexR = require("./routes/index");
+const usersR = require("./routes/users");
+const booksR = require("./routes/books");
+const catR = require("./routes/categories");
+const deliverR = require("./routes/delivery");
 
 exports.routesInit = (app) => {
   app.use("/", indexR);
   app.use("/users", usersR);
   app.use("/book",booksR );
   app.use("/cat",catR );
+  app.use("/delivery",deliverR );
   app.use((req, res) => {
     res.status(404).json({ msg: "Url not found, 404 !" });
   })
