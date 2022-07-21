@@ -1,3 +1,4 @@
+const { json } = require("body-parser")
 const jwt = require("jsonwebtoken")
 
 exports.auth = async (req, res, next) => {
@@ -19,12 +20,11 @@ exports.authAdmin = async (req, res, next) => {
     if (!token) return res.status(401).json({ msg: "tokan required" })
     try {
         let decodeToken = jwt.verify(token, "meni")
-
-        if (decodeToken._role == "admin") {
+        if (decodeToken.role == "admin") {
             req.tokenData = decodeToken;
             next()
         }
-        return res.status(403).json({msg:"You need to send token of admin to be here"});
+        return res.status(403).json({ msg: "You need to send token of admin to be here" });
 
     } catch (err) {
         console.error(err)

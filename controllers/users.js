@@ -1,19 +1,37 @@
-const { UsersModel, signUp_validate, signIn_validate, genToken } = require("../models/usersSchema");
+const { UsersModel, signUp_validate, signIn_validate, genToken, edit_validate } = require("../models/usersSchema");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
-const { auth } = require("../middleWares/auth");
+
 
 exports.getUsers = async (req, res) => {
     try {
-        res.json(await UsersModel.find())
+        res.json(await UsersModel.find({}, { password: 0 }))
     } catch (err) {
         console.error(err.message);
     }
 }
 
-exports.checkToken = auth, async (req, res) => {
-    return res.json({status: "ok", role:req.tokenData.role})
+exports.checkToken = async (req, res) => {
+    return res.json({ status: "ok", role: req.tokenData.role })
+}
+
+exports.userInfo = async (req, res) => {
+    try {
+        res.json(await UsersModel.find({ _id: req.tokenData._id }, { password: 0 }))
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).json({ msg: "server problem" })
+    }
+}
+
+exports.editUserInfo = async (req, res) => {
+    try {
+        res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).json({ msg: "server problem" })
+    }
 }
 
 exports.signUp = async (req, res) => {
@@ -35,7 +53,6 @@ exports.signUp = async (req, res) => {
     }
 
 }
-
 
 //upload user profile image
 exports.imgUpload = async (req, res) => {
@@ -70,8 +87,7 @@ exports.imgUpload = async (req, res) => {
 
 }
 
-
-exports.logIn =  async(req, res) => {
+exports.logIn = async (req, res) => {
 
     try {
         let loginValidation = signIn_validate(req.body);
@@ -88,7 +104,7 @@ exports.logIn =  async(req, res) => {
         if (!(user && thePassExist))
             return res.json({ msg: "wrong user or password" })
 
-        let ticket = genToken(thePassExist._id, thePassExist.role)
+        let ticket = genToken(user._id, user.role)
         res.json({ ticket, user: { name: user.name, role: user.role } })
     }
     catch (e) {
@@ -97,6 +113,30 @@ exports.logIn =  async(req, res) => {
 
 }
 
+exports.updateUser = async (req, res) => {
+
+    let dataValidate = edit_validate(req.body)
+    if (dataValidate.error) {
+        console.log(dataValidate.error.message)
+        return res.status(400).json({ msg: "fildes not valid" })
+    }
+
+    try {
+        let idEdit = req.params.idEdit;
+        let data = await UsersModel.updateOne({ _id: idEdit }, req.body)
+
+        res.status(200).json(data);
+    }
+    catch (err) {
+        if (err.code === 11000) {
+            return res.status(500).json({ err_msg: "Email already in system", code: 11000 })
+        }
+        res.status(500).json({ err_msg: "There is probelm , try again later" })
+
+    }
+
+
+}
 
 
 
