@@ -20,7 +20,7 @@ const createSchema = new mongoose.Schema({
     books_List: [],
     whish_List: [],
     msg: [{
-        userId: String,
+        fromUserId: String,
         name: String,
         date: {
             type: Date,
@@ -33,6 +33,7 @@ const createSchema = new mongoose.Schema({
     }],
     string_users_Bugs: [{
         userId: String,
+        isRead:Boolean,
         date: {
             type: Date,
             default: Date.now(),

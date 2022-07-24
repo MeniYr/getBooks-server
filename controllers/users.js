@@ -1,6 +1,5 @@
 const { UsersModel, signUp_validate, signIn_validate, genToken, edit_validate } = require("../models/usersSchema");
 const bcrypt = require("bcrypt");
-const multer = require("multer");
 const path = require("path");
 
 
@@ -53,7 +52,6 @@ exports.signUp = async (req, res) => {
     }
 
 }
-
 //upload user profile image
 exports.imgUpload = async (req, res) => {
     try {
@@ -140,14 +138,14 @@ exports.updateUser = async (req, res) => {
 
 exports.addMsg = async (req, res) => {
     try {
-        //TODO add msg thruth json whith property msg
-        req.body.userId = req.tokenData._id;
-        // let date = new Date()
-        req.body.date = new Date()
-        // req.body.date = date.getDay()
-        console.log(req.body)
+        let fromUser = req.tokenData._id;
+        let toUser = req.params.toUserID;
 
-        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { msg: req.body } })
+        req.body.fromUserId = fromUser;
+        req.body.date = new Date()
+        req.body.isRead = false;
+
+        let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
 
 
         res.status(200).json(data)
@@ -157,6 +155,88 @@ exports.addMsg = async (req, res) => {
 
     }
 }
+
+exports.addBugMsg = async (req, res) => {
+    try {
+        req.body.userId = req.tokenData._id;
+        req.body.isRead = false,
+            req.body.date = new Date()
+
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { string_users_Bugs: req.body, date: Date.now } })
+
+
+        res.status(200).json(data)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
+
+exports.delMsg = async (req, res) => {
+    try {
+        let delId = req.params.idDel;
+
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $pull: { msg: { _id: delId } } })
+
+        res.status(200).json(data)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
+
+exports.readMsg = async (req, res) => {
+    try {
+        let idMsg = req.params.idMsg;
+        let user = await UsersModel.updateOne(
+            { _id: req.tokenData._id },
+            { $set: { "msg.$[elem].isRead": true } },
+            { arrayFilters: [{ "elem._id": idMsg }] }
+        )
+        res.status(200).json(user)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
+
+exports.readBugMsg = async (req, res) => {
+    try {
+        let idBugMsg = req.params.idBugMsg;
+        let user = await UsersModel.updateOne(
+            { _id: req.tokenData._id },
+            { $set: { "string_users_Bugs.$[elem].isRead": true } },
+            { arrayFilters: [{ "elem._id": idBugMsg }] }
+        )
+        res.status(200).json(user)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
+
+exports.favs = async (req, res) => {
+    try {
+        let user = req.tokenData._id;
+        let favBookID = req.params.favBookID;
+
+        req.body.date = new Date()
+
+        let data = await UsersModel.updateOne({ _id: user }, { $push: { whish_List: favBookID } })
+
+
+        res.status(200).json(data)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "server problem" })
+
+    }
+}
+
 
 
 

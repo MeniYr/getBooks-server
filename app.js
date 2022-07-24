@@ -23,10 +23,10 @@ let port = process.env.PORT || "3000";
 server.listen(port);
 
 //mongodb initial connection
-const mongooseConnect = async () => {
-  try{
-     mongoose.connect("mongodb://localhost:27017/get_book", console.log("mongo is connect"));
+// const mongooseConnect = async () => {
+//   try{
+//      mongoose.connect("mongodb://localhost:27017/get_book", console.log("mongo is connect"));
 
-  }catch(err){console.log(err)};
-}
+//   }catch(err){console.log(err)};
+// }
 // mongooseConnect();
