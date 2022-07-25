@@ -1,8 +1,6 @@
-const { json } = require("body-parser")
 const jwt = require("jsonwebtoken")
 
 exports.auth = async (req, res, next) => {
-
     let token = req.header("x-api-key")
     if (!token) return res.status(401).json({ msg: "tokan required" })
     try {

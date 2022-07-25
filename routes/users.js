@@ -10,11 +10,11 @@ router.get("/", auth, userControlle.getUsers)
 router.get("/userInfo", auth, userControlle.userInfo)
 router.post("/signUp", userControlle.signUp)
 router.post("/login", userControlle.logIn)
+router.put("/editUserInfo", auth, userControlle.editUserInfo)
 
-// for user update
-router.put("/editUserInfo", auth, userControlle.userInfo)
 // for admin update
 router.put("/updateUser/:idEdit", authAdmin, userControlle.updateUser)
+router.delete("/delUser/:idDel", authAdmin, userControlle.deleteUser)
 
 router.post("/addMsg/:toUserID", auth, userControlle.addMsg)
 router.post("/addBugMsg", auth,userControlle.addBugMsg)
@@ -23,6 +23,6 @@ router.put("/readMsg/:idMsg", auth,userControlle.readMsg)
 router.put("/readBugMsg/:idBugMsg", auth,userControlle.readBugMsg)
 router.put("/favs/:favBookID", auth,userControlle.favs)
 router.post("/imgUpload", auth, userControlle.imgUpload)
-router.post("/checkToken", auth, userControlle.checkToken)
+router.get("/checkToken", auth, userControlle.checkToken)
 
 module.exports = router;

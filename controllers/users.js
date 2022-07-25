@@ -17,7 +17,8 @@ exports.checkToken = async (req, res) => {
 
 exports.userInfo = async (req, res) => {
     try {
-        res.json(await UsersModel.find({ _id: req.tokenData._id }, { password: 0 }))
+        let user = await UsersModel.find({ _id: req.tokenData._id })
+        return res.json(user[0])
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({ msg: "server problem" })
@@ -26,7 +27,7 @@ exports.userInfo = async (req, res) => {
 
 exports.editUserInfo = async (req, res) => {
     try {
-        res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
+        return res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({ msg: "server problem" })
@@ -35,20 +36,23 @@ exports.editUserInfo = async (req, res) => {
 
 exports.signUp = async (req, res) => {
     try {
+
         let validateSignUp = signUp_validate(req.body);
         if (validateSignUp.error)
             return res.status(409).json(validateSignUp.error.message)
 
         let user = await UsersModel.create(req.body)
         await user.save()
-        user.password = await bcript.hash(req.body.password, 10)
+        user.password = await bcrypt.hash(req.body.password, 10)
         user.password = "********"
-        res.status(201).json(user)
+        return res.status(201).json(user)
 
     } catch (e) {
         if (e.code == 11000)
             return res.status(400).json({ code: 11000, err_msg: "email already in system try agein" })
-        console.statos(500).error(e);
+        console.log(e)
+        return res.status(500).json(e)
+
     }
 
 }
@@ -75,7 +79,7 @@ exports.imgUpload = async (req, res) => {
             //let data = await UsersModel.updateOne({ _id: req.params.idUser, user_id: req.tokenData._id }, { image: savedPicName })
             let data = await UsersModel.updateOne({ _id: "62d8f4afa97d18c96a328dca" }, { image: savedPicName })
 
-            res.json({ msg: "file upload", data })
+            return res.json({ msg: "file upload", data })
         })
     } catch (err) {
         console.error(err);
@@ -102,11 +106,12 @@ exports.logIn = async (req, res) => {
         if (!(user && thePassExist))
             return res.json({ msg: "wrong user or password" })
 
-        let ticket = genToken(user._id, user.role)
-        res.json({ ticket, user: { name: user.name, role: user.role } })
+        let token = genToken(user._id, user.role)
+        return res.json({ token, user: { name: user.name, role: user.role } })
     }
     catch (e) {
         console.error(e);
+        return res.status(500).json({ msg: "server problem" });
     }
 
 }
@@ -123,13 +128,13 @@ exports.updateUser = async (req, res) => {
         let idEdit = req.params.idEdit;
         let data = await UsersModel.updateOne({ _id: idEdit }, req.body)
 
-        res.status(200).json(data);
+        return res.status(200).json(data);
     }
     catch (err) {
         if (err.code === 11000) {
             return res.status(500).json({ err_msg: "Email already in system", code: 11000 })
         }
-        res.status(500).json({ err_msg: "There is probelm , try again later" })
+        return res.status(500).json({ err_msg: "There is probelm , try again later" })
 
     }
 
@@ -148,10 +153,45 @@ exports.addMsg = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
 
 
-        res.status(200).json(data)
+        return res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
+
+    }
+}
+exports.deleteUser = async (req, res) => {
+
+    try {
+        let idDel = req.params.idDel;
+        let data = await UsersModel.deleteOne({ _id: idDel })
+
+        return res.status(200).json(data);
+    }
+    catch (err) {
+        return res.status(500).json({ err_msg: "There is probelm , try again later" })
+
+    }
+
+
+}
+
+exports.addMsg = async (req, res) => {
+    try {
+        let fromUser = req.tokenData._id;
+        let toUser = req.params.toUserID;
+
+        req.body.fromUserId = fromUser;
+        req.body.date = new Date()
+        req.body.isRead = false;
+
+        let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
+
+
+        return res.status(200).json(data)
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -165,10 +205,10 @@ exports.addBugMsg = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { string_users_Bugs: req.body, date: Date.now } })
 
 
-        res.status(200).json(data)
+        return res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -179,10 +219,10 @@ exports.delMsg = async (req, res) => {
 
         let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $pull: { msg: { _id: delId } } })
 
-        res.status(200).json(data)
+        return res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -195,10 +235,10 @@ exports.readMsg = async (req, res) => {
             { $set: { "msg.$[elem].isRead": true } },
             { arrayFilters: [{ "elem._id": idMsg }] }
         )
-        res.status(200).json(user)
+        return res.status(200).json(user)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -211,10 +251,10 @@ exports.readBugMsg = async (req, res) => {
             { $set: { "string_users_Bugs.$[elem].isRead": true } },
             { arrayFilters: [{ "elem._id": idBugMsg }] }
         )
-        res.status(200).json(user)
+        return res.status(200).json(user)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -229,10 +269,10 @@ exports.favs = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: user }, { $push: { whish_List: favBookID } })
 
 
-        res.status(200).json(data)
+        return res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: "server problem" })
+        return res.status(500).json({ msg: "server problem" })
 
     }
 }
