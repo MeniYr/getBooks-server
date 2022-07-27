@@ -5,53 +5,50 @@ const path = require("path");
 
 exports.getUsers = async (req, res) => {
     try {
-        res.json(await UsersModel.find({}, { password: 0 }))
+        let users = await UsersModel.find({}, { password: 0 })
+        res.json(users)
     } catch (err) {
         console.error(err.message);
     }
 }
 
 exports.checkToken = async (req, res) => {
-    return res.json({ status: "ok", role: req.tokenData.role })
+    res.json({ status: "ok", role: req.tokenData.role })
 }
 
 exports.userInfo = async (req, res) => {
     try {
         let user = await UsersModel.find({ _id: req.tokenData._id })
-        return res.json(user[0])
+        res.json(user[0])
     } catch (err) {
         console.error(err.message);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
     }
 }
 
 exports.editUserInfo = async (req, res) => {
     try {
-        return res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
+        res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
     } catch (err) {
         console.error(err.message);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
     }
 }
 
 exports.signUp = async (req, res) => {
     try {
-
-        let validateSignUp = signUp_validate(req.body);
-        if (validateSignUp.error)
-            return res.status(409).json(validateSignUp.error.message)
-
         let user = await UsersModel.create(req.body)
         await user.save()
         user.password = await bcrypt.hash(req.body.password, 10)
         user.password = "********"
-        return res.status(201).json(user)
+        res.status(201).json(user)
 
     } catch (e) {
-        if (e.code == 11000)
+        if (e.code == 11000) {
             return res.status(400).json({ code: 11000, err_msg: "email already in system try agein" })
+        }
         console.log(e)
-        return res.status(500).json(e)
+        res.status(500).json(e)
 
     }
 
@@ -61,11 +58,11 @@ exports.imgUpload = async (req, res) => {
     try {
         let file = req.files.myFile;
         if (file.size > (5 * 1024 * 1024))
-            return res.status(400).json({ msg: "the file  is too big, please upload max 5 mb" })
+            res.status(400).json({ msg: "the file  is too big, please upload max 5 mb" })
 
         const exts_ar = [".jpg", ".JPG", ".jpeg", ".png", ".gif", ".svg", "..jfif"]
         if (!exts_ar.includes(path.extname(file.name)))
-            return res.status(400).json({ msg: "please send image file only with the type`s jpg or png" })
+            res.status(400).json({ msg: "please send image file only with the type`s jpg or png" })
 
         // let savedPicName = "/users_img/" + req.params.idUser + path.extname(file.name);
         let savedPicName = "/62d8f4afa97d18c96a328dca" + path.extname(file.name);
@@ -79,7 +76,7 @@ exports.imgUpload = async (req, res) => {
             //let data = await UsersModel.updateOne({ _id: req.params.idUser, user_id: req.tokenData._id }, { image: savedPicName })
             let data = await UsersModel.updateOne({ _id: "62d8f4afa97d18c96a328dca" }, { image: savedPicName })
 
-            return res.json({ msg: "file upload", data })
+            res.json({ msg: "file upload", data })
         })
     } catch (err) {
         console.error(err);
@@ -107,11 +104,11 @@ exports.logIn = async (req, res) => {
             return res.json({ msg: "wrong user or password" })
 
         let token = genToken(user._id, user.role)
-        return res.json({ token, user: { name: user.name, role: user.role } })
+        res.json({ token, user: { name: user.name, role: user.role } })
     }
     catch (e) {
         console.error(e);
-        return res.status(500).json({ msg: "server problem" });
+        res.status(500).json({ msg: "server problem" });
     }
 
 }
@@ -128,13 +125,13 @@ exports.updateUser = async (req, res) => {
         let idEdit = req.params.idEdit;
         let data = await UsersModel.updateOne({ _id: idEdit }, req.body)
 
-        return res.status(200).json(data);
+        res.status(200).json(data);
     }
     catch (err) {
         if (err.code === 11000) {
             return res.status(500).json({ err_msg: "Email already in system", code: 11000 })
         }
-        return res.status(500).json({ err_msg: "There is probelm , try again later" })
+        res.status(500).json({ err_msg: "There is probelm , try again later" })
 
     }
 
@@ -153,10 +150,10 @@ exports.addMsg = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
 
 
-        return res.status(200).json(data)
+        res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -166,10 +163,10 @@ exports.deleteUser = async (req, res) => {
         let idDel = req.params.idDel;
         let data = await UsersModel.deleteOne({ _id: idDel })
 
-        return res.status(200).json(data);
+        res.status(200).json(data);
     }
     catch (err) {
-        return res.status(500).json({ err_msg: "There is probelm , try again later" })
+        res.status(500).json({ err_msg: "There is probelm , try again later" })
 
     }
 
@@ -188,10 +185,10 @@ exports.addMsg = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
 
 
-        return res.status(200).json(data)
+        res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -205,10 +202,10 @@ exports.addBugMsg = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { string_users_Bugs: req.body, date: Date.now } })
 
 
-        return res.status(200).json(data)
+        res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -219,10 +216,10 @@ exports.delMsg = async (req, res) => {
 
         let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $pull: { msg: { _id: delId } } })
 
-        return res.status(200).json(data)
+        res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -235,10 +232,10 @@ exports.readMsg = async (req, res) => {
             { $set: { "msg.$[elem].isRead": true } },
             { arrayFilters: [{ "elem._id": idMsg }] }
         )
-        return res.status(200).json(user)
+        res.status(200).json(user)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -251,10 +248,10 @@ exports.readBugMsg = async (req, res) => {
             { $set: { "string_users_Bugs.$[elem].isRead": true } },
             { arrayFilters: [{ "elem._id": idBugMsg }] }
         )
-        return res.status(200).json(user)
+        res.status(200).json(user)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
@@ -269,15 +266,11 @@ exports.favs = async (req, res) => {
         let data = await UsersModel.updateOne({ _id: user }, { $push: { whish_List: favBookID } })
 
 
-        return res.status(200).json(data)
+        res.status(200).json(data)
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ msg: "server problem" })
+        res.status(500).json({ msg: "server problem" })
 
     }
 }
-
-
-
-
 

@@ -4,7 +4,9 @@ const jwt = require("jsonwebtoken");
 
 const createSchema = new mongoose.Schema({
     name: String,
-    email: String,
+    email: {
+        type: String,
+    },
     isShareMail: {
         type: Boolean,
         default: false,
@@ -12,7 +14,9 @@ const createSchema = new mongoose.Schema({
     password: String,
     address: String,
     date_of_birth: String,
-    phone: String,
+    phone: {
+        type: String,
+    },
     isSharePhone: {
         type: Boolean,
         default: false,
@@ -33,7 +37,7 @@ const createSchema = new mongoose.Schema({
     }],
     string_users_Bugs: [{
         userId: String,
-        isRead:Boolean,
+        isRead: Boolean,
         date: {
             type: Date,
             default: Date.now(),
@@ -75,12 +79,14 @@ exports.genToken = (_id, role) => {
 }
 
 exports.signUp_validate = (req_body) => {
+
     let joiValidate = joi.object({
         name: joi.string().min(1).required(),
         email: joi.string().min(6).max(100).email().required(),
         address: joi.string().min(3).max(100).required(),
         password: joi.string().min(3).max(100).required(),
-        phone: joi.string().min(10).allow("", null),
+        phone: joi.string().min(8)
+        ,
         isShareMail: joi.boolean().allow(null),
         isSharePhone: joi.boolean().allow(null)
     })

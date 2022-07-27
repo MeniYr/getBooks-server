@@ -1,6 +1,7 @@
 const express = require("express");
 const userControlle = require("../controllers/users");
 const { auth, authAdmin } = require("../middleWares/auth");
+const { signup_joi } = require("../middleWares/signUp_Joi");
 const router = express.Router();
 
 
@@ -8,7 +9,7 @@ const router = express.Router();
 
 router.get("/", auth, userControlle.getUsers)
 router.get("/userInfo", auth, userControlle.userInfo)
-router.post("/signUp", userControlle.signUp)
+router.post("/signUp",signup_joi , userControlle.signUp)
 router.post("/login", userControlle.logIn)
 router.put("/editUserInfo", auth, userControlle.editUserInfo)
 
