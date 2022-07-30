@@ -104,7 +104,7 @@ exports.logIn = async (req, res) => {
             return res.json({ msg: "wrong user or password" })
 
         let token = genToken(user._id, user.role)
-        res.json({ token, user: { name: user.name, role: user.role } })
+        res.json({ token, user: { name: user.name, role: user.role,userID:user._id } })
     }
     catch (e) {
         console.error(e);
