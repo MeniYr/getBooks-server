@@ -29,7 +29,7 @@ exports.checkToken = async (req, res) => {
 
 exports.userInfo = async (req, res) => {
     try {
-        let user = await UsersModel.find({ _id: req.tokenData._id })
+        let user = await UsersModel.find({ _id: req.tokenData._id },{ password: 0 })
         res.json(user[0])
     } catch (err) {
         console.error(err.message);
