@@ -8,6 +8,7 @@ const router = express.Router();
 
 
 router.get("/", auth, userControlle.getUsers)
+router.get("/userId/:idUser", auth, userControlle.getUser)
 router.get("/userInfo", auth, userControlle.userInfo)
 router.post("/signUp",signup_joi , userControlle.signUp)
 router.post("/login", userControlle.logIn)

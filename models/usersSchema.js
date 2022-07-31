@@ -28,6 +28,7 @@ const createSchema = new mongoose.Schema({
         name: String,
         date: {
             type: Date,
+            default:Date.now
         },
         msg: String,
         isRead: {

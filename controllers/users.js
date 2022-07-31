@@ -4,9 +4,20 @@ const path = require("path");
 
 
 exports.getUsers = async (req, res) => {
+   
     try {
         let users = await UsersModel.find({}, { password: 0 })
         res.json(users)
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+exports.getUser = async (req, res) => {
+   
+    try {
+        console.log("req.params: ",req.params.idUser);
+        let user = await UsersModel.findOne({_id:req.params.idUser}, { password: 0 })
+        res.json(user)
     } catch (err) {
         console.error(err.message);
     }
@@ -140,6 +151,7 @@ exports.updateUser = async (req, res) => {
 
 exports.addMsg = async (req, res) => {
     try {
+        
         let fromUser = req.tokenData._id;
         let toUser = req.params.toUserID;
 
@@ -157,6 +169,7 @@ exports.addMsg = async (req, res) => {
 
     }
 }
+
 exports.deleteUser = async (req, res) => {
 
     try {
@@ -171,26 +184,6 @@ exports.deleteUser = async (req, res) => {
     }
 
 
-}
-
-exports.addMsg = async (req, res) => {
-    try {
-        let fromUser = req.tokenData._id;
-        let toUser = req.params.toUserID;
-
-        req.body.fromUserId = fromUser;
-        req.body.date = new Date()
-        req.body.isRead = false;
-
-        let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
-
-
-        res.status(200).json(data)
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: "server problem" })
-
-    }
 }
 
 exports.addBugMsg = async (req, res) => {

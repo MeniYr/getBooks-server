@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken")
 
 exports.auth = async (req, res, next) => {
     let token = req.header("x-api-key")
+    console.log("auth token: ",token)
     if (!token) return res.status(401).json({ msg: "tokan required" })
     try {
     
