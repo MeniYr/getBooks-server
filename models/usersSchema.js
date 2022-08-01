@@ -24,7 +24,10 @@ const createSchema = new mongoose.Schema({
     books_List: [],
     whish_List: [],
     msg: [{
-        fromUserId: String,
+        fromUserId: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref:"users"
+        },
         name: String,
         date: {
             type: Date,

@@ -12,6 +12,7 @@ router.get("/userId/:idUser", auth, userControlle.getUser)
 router.get("/userInfo", auth, userControlle.userInfo)
 router.post("/signUp",signup_joi , userControlle.signUp)
 router.post("/login", userControlle.logIn)
+router.delete("/del/:idDel", userControlle.deleteUser)
 router.put("/editUserInfo", auth, userControlle.editUserInfo)
 
 // for admin update

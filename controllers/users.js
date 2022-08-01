@@ -20,6 +20,7 @@ exports.getUser = async (req, res) => {
         res.json(user)
     } catch (err) {
         console.error(err.message);
+        return err.message
     }
 }
 
@@ -96,6 +97,8 @@ exports.imgUpload = async (req, res) => {
 
 
 }
+
+// C:\HTML\getsBook_project\server\profilePic\62d8f4afa97d18c96a328dca.jpg
 
 exports.logIn = async (req, res) => {
 
