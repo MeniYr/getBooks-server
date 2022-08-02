@@ -64,7 +64,6 @@ const createSchema = new mongoose.Schema({
         default: Date.now(),
     },
     connectingLog: [[]],
-    delivary_count: Number,
     image: String,
     role: {
         type: String,

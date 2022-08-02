@@ -21,9 +21,11 @@ exports.authAdmin = async (req, res, next) => {
     try {
         let decodeToken = jwt.verify(token, "meni")
         if (decodeToken.role == "admin") {
+            console.log(decodeToken.role)
             req.tokenData = decodeToken;
             next()
         }
+        else
         return res.status(403).json({ msg: "You need to send token of admin to be here" });
 
     } catch (err) {

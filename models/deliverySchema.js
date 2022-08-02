@@ -2,24 +2,28 @@ const mongoose = require("mongoose");
 const joi = require("joi");
 
 const createSchema = new mongoose.Schema({
-    name: String,
-    author: String,
-    publishing_year: Date,
-    pages: Number,
-    description: String,
-    image: String,
-    date: {
-        type: Date,
-        default: Date.now
-    },
-    cat_id: {
+   bookID: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "categories"
+        ref: "book"
     },
-    created_at: {
+   ownerID: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "book"
+    },
+    interestedUsersID : [{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "book"
+    }],
+    open_ticket: {
         type: Date,
         default: Date.now
     },
+    close_ticket: {
+        type: Date,
+        default: Date.now
+    },
+ 
+   
     favoriteCount: Number,
     rate: Number,
     comments: [{
@@ -35,17 +39,17 @@ const createSchema = new mongoose.Schema({
     }]
 })
 
-exports.BooksSchema = mongoose.model("book", createSchema);
+exports.deliverySchema = mongoose.Model("delivery", createSchema);
 
-exports.validateBook = (_reqBody) => {
-    const bookVal = joi.object({
+exports.validatedelivery = (_reqBody) => {
+    const deliveryVal = joi.object({
         name: joi.string().min(1).max(20).required(),
         author: joi.string().min(1).max(20).required(),
         publishing_year: joi.date().min(1).max(4).required(),
         description: joi.string().min(5).max(5000).allow(""),
         comments: joi.string()
     })
-    return bookVal.validate(_reqBody);
+    return deliveryVal.validate(_reqBody);
 }
 
 

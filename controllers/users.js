@@ -4,19 +4,21 @@ const path = require("path");
 
 
 exports.getUsers = async (req, res) => {
-   
+
     try {
         let users = await UsersModel.find({}, { password: 0 })
         res.json(users)
     } catch (err) {
         console.error(err.message);
+        res.status(500).json({ msg: "there is a server problem" }, err)
+
     }
 }
 exports.getUser = async (req, res) => {
-   
+
     try {
-        console.log("req.params: ",req.params.idUser);
-        let user = await UsersModel.findOne({_id:req.params.idUser}, { password: 0 })
+        console.log("req.params: ", req.params.idUser);
+        let user = await UsersModel.findOne({ _id: req.params.idUser }, { password: 0 })
         res.json(user)
     } catch (err) {
         console.error(err.message);
@@ -30,7 +32,7 @@ exports.checkToken = async (req, res) => {
 
 exports.userInfo = async (req, res) => {
     try {
-        let user = await UsersModel.find({ _id: req.tokenData._id },{ password: 0 })
+        let user = await UsersModel.find({ _id: req.tokenData._id }, { password: 0 })
         res.json(user[0])
     } catch (err) {
         console.error(err.message);
@@ -48,6 +50,11 @@ exports.editUserInfo = async (req, res) => {
 }
 
 exports.signUp = async (req, res) => {
+
+    let userVal = signUp_validate(req.body)
+    if (userVal.error)
+        return res.status(400).json(validUser.error.details)
+
     try {
         let user = await UsersModel.create(req.body)
         await user.save()
@@ -109,20 +116,25 @@ exports.logIn = async (req, res) => {
             return res.status(401).json({ err_msg: "user / password not valid" })
         }
 
-        let theMailExist = await UsersModel.findOne({ email: req.body.email });
+        let user = await UsersModel.findOne({ email: req.body.email });
         let theNameExist = await UsersModel.findOne({ name: req.body.name });
-        let user = theMailExist ? theMailExist : theNameExist;
-        const thePassExist = bcrypt.compare(req.body.password, user.password);
+        // let user = theMailExist ? theMailExist : theNameExist;
+        if (!user) {
+            return res.status(403).json({ msg: "wrong user or password" })
+        }
+        let thePassExist = bcrypt.compare(req.body.password, user.password);
+        if (!thePassExist) {
+            return res.status(403).json({ msg: "wrong user or password" })
+        }
 
-        if (!(user && thePassExist))
-            return res.json({ msg: "wrong user or password" })
-
+        // if (!(user && thePassExist))
+        // console.log(user)
         let token = genToken(user._id, user.role)
-       return res.json({ token, user: { name: user.name, role: user.role,userID:user._id } })
+        res.json({ token, user: { name: user.name, role: user.role, userID: user._id } })
     }
     catch (e) {
         console.error(e);
-        return res.status(500).json({ msg: "server problem" });
+        res.status(500).json({ msg: "server problem" });
     }
 
 }
@@ -154,7 +166,7 @@ exports.updateUser = async (req, res) => {
 
 exports.addMsg = async (req, res) => {
     try {
-        
+
         let fromUser = req.tokenData._id;
         let toUser = req.params.toUserID;
 
