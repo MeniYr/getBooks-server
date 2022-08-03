@@ -5,5 +5,8 @@ const router = express.Router();
 
 router.get("/",booksControle.getBooks)
 router.post("/add",auth,booksControle.addBook)
+router.patch("/delBook/:bookID",auth,booksControle.deleteBook)
 router.post("/srch/:srch_word",auth,booksControle.srchBooks)
+router.patch("/addMsg/:bookID",auth,booksControle.addMsg)
+router.patch("/deldMsg/:idDel",auth,booksControle.delMsg)
 module.exports = router;

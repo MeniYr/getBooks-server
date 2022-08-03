@@ -7,7 +7,7 @@ const deliverR = require("./routes/delivery");
 exports.routesInit = (app) => {
   app.use("/", indexR);
   app.use("/users", usersR);
-  app.use("/book",booksR );
+  app.use("/books",booksR );
   app.use("/cat",catR );
   app.use("/delivery",deliverR );
   app.use((req, res) => {

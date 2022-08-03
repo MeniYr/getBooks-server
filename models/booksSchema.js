@@ -31,7 +31,7 @@ const createSchema = new mongoose.Schema({
     }]
 })
 
-exports.BooksSchema = mongoose.model("books", createSchema);
+exports.BooksModel = mongoose.model("books", createSchema);
 
 exports.validateBook = (_reqBody) => {
     const bookVal = joi.object({

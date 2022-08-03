@@ -14,6 +14,7 @@ exports.getUsers = async (req, res) => {
 
     }
 }
+
 exports.getUser = async (req, res) => {
 
     try {
