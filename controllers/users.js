@@ -43,7 +43,9 @@ exports.userInfo = async (req, res) => {
 
 exports.editUserInfo = async (req, res) => {
     try {
-        res.json(await UsersModel.updateOne({ _id: req.tokenData._id }, req.body))
+        console.log(req.body);
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, req.body)
+        res.status(201).json(data)
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ msg: "server problem" })

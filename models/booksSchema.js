@@ -38,10 +38,11 @@ exports.validateBook = (_reqBody) => {
         name: joi.string().min(1).max(20).required(),
         author: joi.string().min(1).max(20).required(),
         publishing_year: joi.string().min(1).max(4).required(),
-        description: joi.string().min(5).max(5000).allow(""),
-        comments: joi.string(),
-        pages: joi.number(),
-        cat_id: joi.string()
+        description: joi.string().min(5).max(5000).allow("",null),
+        comments: joi.string().allow("",null),
+        pages: joi.number().allow("",null),
+        cat_id: joi.string(),
+        image: joi.string()
     })
     return bookVal.validate(_reqBody);
 }

@@ -12,7 +12,7 @@ exports.getBooks = async (req, res) => {
                     path: "comments",
                     populate: {
                         path: "fromUser",
-                        select:"name"
+                        select: "name"
                     }
                 }
             )
@@ -69,14 +69,16 @@ exports.delMsg = async (req, res) => {
 
 exports.addBook = async (req, res) => {
     try {
-
-        let exist_on_user_books_lib = await BooksSchema.findOne({ $and: [{ name: req.body.name }, { author: req.body.author }, { publishing_year: req.body.publishing_year }] })
+        // console.log(req.body);
+        let exist_on_user_books_lib = await BooksModel.findOne({ $and: [{ name: req.body.name }, { author: req.body.author }, { publishing_year: req.body.publishing_year }] })
         if (exist_on_user_books_lib)
             return res.status(409).json("the same book is exist already on your lib")
 
         let checkValidate = validateBook(req.body)
-        if (checkValidate.error)
+        if (checkValidate.error) {
+            console.log(checkValidate.error.details);
             return res.status(409).json(checkValidate.error.details)
+        }
 
         let data = await BooksModel.create(req.body)
         res.status(200).json(data)
@@ -91,7 +93,7 @@ exports.deleteBook = async (req, res) => {
     try {
 
         let idDel = req.params.idDel;
-      
+
         let data = await BooksModel.deleteOne({ _id: idDel })
 
         res.status(200).json(data)
@@ -101,5 +103,9 @@ exports.deleteBook = async (req, res) => {
         res.status(500).json(err)
     }
 }
+
+//TODO change rate
+//TODO change favCount
+//TODO addImage
 
 //TODO middlewere search for isbn, after fill the name on client before 
