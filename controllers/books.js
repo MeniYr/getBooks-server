@@ -8,6 +8,9 @@ exports.getBooks = async (req, res) => {
                 { path: "cat_id" }
             )
             .populate(
+                { path: "userID" }
+            )
+            .populate(
                 {
                     path: "comments",
                     populate: {
