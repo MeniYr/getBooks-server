@@ -8,6 +8,10 @@ const createSchema = new mongoose.Schema({
     pages: Number,
     description: String,
     image: String,
+    userID:{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "users"
+    },
     cat_id: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "categories"
@@ -42,7 +46,8 @@ exports.validateBook = (_reqBody) => {
         comments: joi.string().allow("",null),
         pages: joi.number().allow("",null),
         cat_id: joi.string(),
-        image: joi.string()
+        image: joi.string(),
+        userID: joi.string()
     })
     return bookVal.validate(_reqBody);
 }

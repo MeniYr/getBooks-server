@@ -22,6 +22,28 @@ exports.getBooks = async (req, res) => {
         res.status(500).json(err)
     }
 }
+exports.getMyBooks = async (req, res) => {
+    let user_id = req.tokenData._id
+    try {
+        let books = await BooksModel.find({ userID:user_id})
+            .populate(
+                { path: "cat_id" }
+            )
+            .populate(
+                {
+                    path: "comments",
+                    populate: {
+                        path: "fromUser",
+                        select: "name"
+                    }
+                }
+            )
+        res.status(200).json(books)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err)
+    }
+}
 
 exports.srchBooks = async (req, res) => {
     let srch_word = req.params.srch_word;
@@ -69,6 +91,8 @@ exports.delMsg = async (req, res) => {
 
 exports.addBook = async (req, res) => {
     try {
+        let userID = req.tokenData._id
+        req.body.userID = userID
         // console.log(req.body);
         let exist_on_user_books_lib = await BooksModel.findOne({ $and: [{ name: req.body.name }, { author: req.body.author }, { publishing_year: req.body.publishing_year }] })
         if (exist_on_user_books_lib)
