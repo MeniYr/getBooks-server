@@ -25,10 +25,11 @@ exports.getBooks = async (req, res) => {
         res.status(500).json(err)
     }
 }
+
 exports.getMyBooks = async (req, res) => {
     let user_id = req.tokenData._id
     try {
-        let books = await BooksModel.find({ userID:user_id})
+        let books = await BooksModel.find({ userID: user_id })
             .populate(
                 { path: "cat_id" }
             )
@@ -49,15 +50,16 @@ exports.getMyBooks = async (req, res) => {
 }
 
 exports.srchBooks = async (req, res) => {
-    let srch_word = req.params.srch_word;
-    let regularEXP = new RegExp(srch_word, "i")
-
     try {
+
+        console.log("srch body => ", req.body);
+        let regularEXP = new RegExp(req.body, "i")
+
         let resualt = await BooksModel.find({ $or: [{ name: regularEXP }, { author: regularEXP }] })
         res.status(200).json(resualt)
 
     } catch (err) {
-        console.log(err);
+        console.log("error srch => ", err);
         res.status(500).json(err)
     }
 }
