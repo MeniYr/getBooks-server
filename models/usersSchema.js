@@ -12,7 +12,8 @@ const createSchema = new mongoose.Schema({
         default: false,
     },
     password: String,
-    address: String,
+    city: String,
+    street: String,
     date_of_birth: String,
     phone: {
         type: String,
@@ -86,7 +87,8 @@ exports.signUp_validate = (req_body) => {
     let joiValidate = joi.object({
         name: joi.string().min(1).required(),
         email: joi.string().min(6).max(100).email().required(),
-        address: joi.string().min(3).max(100).required(),
+        city: joi.string().min(2).max(20).required(),
+        street: joi.string().min(2).max(20).required(),
         password: joi.string().min(3).max(100).required(),
         phone: joi.string().min(8)
         ,
@@ -110,7 +112,8 @@ exports.edit_validate = (req_body) => {
     let joiValidateE = joi.object({
         name: joi.string().min(1).required(),
         email: joi.string().min(6).max(100).email().required(),
-        address: joi.string().min(5).max(100).required(),
+        city: joi.string().min(2).max(20).required(),
+        street: joi.string().min(2).max(20).required(),
         password: joi.string().min(8).max(100).required(),
         phone: joi.string().min(10).allow("", null),
         isShareMail: joi.boolean().required(),

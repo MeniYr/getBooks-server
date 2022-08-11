@@ -50,12 +50,24 @@ exports.getMyBooks = async (req, res) => {
 }
 
 exports.srchBooks = async (req, res) => {
+
     try {
 
-        console.log("srch body => ", req.body);
         let regularEXP = new RegExp(req.body, "i")
 
         let resualt = await BooksModel.find({ $or: [{ name: regularEXP }, { author: regularEXP }] })
+        .populate(
+            { path: "cat_id" }
+        )
+        .populate(
+            {
+                path: "comments",
+                populate: {
+                    path: "fromUser",
+                    select: "name"
+                }
+            }
+        )
         res.status(200).json(resualt)
 
     } catch (err) {
