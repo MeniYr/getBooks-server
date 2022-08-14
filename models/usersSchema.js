@@ -23,16 +23,23 @@ const createSchema = new mongoose.Schema({
         default: false,
     },
     books_List: [],
+    notifications: [{
+        fromUserId: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "users"
+        },
+        notify: String,
+    }],
     whish_List: [],
     msg: [{
         fromUserId: {
             type: mongoose.SchemaTypes.ObjectId,
-            ref:"users"
+            ref: "users"
         },
         name: String,
         date: {
             type: Date,
-            default:Date.now
+            default: Date.now
         },
         msg: String,
         isRead: {

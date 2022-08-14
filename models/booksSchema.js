@@ -39,7 +39,7 @@ exports.BooksModel = mongoose.model("books", createSchema);
 
 exports.validateBook = (_reqBody) => {
     const bookVal = joi.object({
-        name: joi.string().min(1).max(20).required(),
+        name: joi.string().min(1).max(100).required(),
         author: joi.string().min(1).max(20).required(),
         publishing_year: joi.string().min(1).max(4).required(),
         description: joi.string().min(5).max(5000).allow("",null),

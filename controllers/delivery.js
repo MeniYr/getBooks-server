@@ -10,10 +10,66 @@ exports.getAll = async (req, res) => {
     }
 }
 
+exports.srch = async (req, res) => {
+
+    try {
+
+        let regularEXP = new RegExp(req.body, "i")
+
+        let resualt = await deliveryModel.find()
+        .populate(
+            {path: "bookID"}
+        )
+        .populate(
+            {path: "ownerID"}
+        )
+        .populate(
+            {path: "interestedUsersID"}
+        )
+        res.status(200).json(resualt)
+
+    } catch (err) {
+        console.log("error srch => ", err);
+        res.status(500).json(err)
+    }
+}
+
 exports.create = async (req, res) => {
     try {
         let deliver = await deliveryModel.create(req.body)
         res.status(200).json(deliver)
+    }
+    catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+exports.addInerested = async (req, res) => {
+    try {
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { interestedUsersID: req.params.userID } })
+        res.status(200).json(data)
+    }
+    catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+exports.removeInerested = async (req, res) => {
+    let delId = req.params.delID;
+    try {
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $pull: { interestedUsersID: { _id: delId } } })
+        res.status(200).json(data)
+    }
+    catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+exports.deleteDelevery = async (req, res) => {
+    let delId = req.params.delID;
+    try {
+        let data = await UsersModel.deleteOne({ _id: delId })
+        res.status(200).json(data)
     }
     catch (err) {
         res.status(500).json(err)

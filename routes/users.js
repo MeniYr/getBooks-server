@@ -21,11 +21,12 @@ router.delete("/delUser/:idDel", authAdmin, userControlle.deleteUser)
 
 router.post("/addMsg/:toUserID", auth, userControlle.addMsg)
 router.post("/addBugMsg", auth,userControlle.addBugMsg)
+router.post("/addNote/:idFromUser", auth,userControlle.addNotification)
 router.put("/delMsg/:idDel", auth, userControlle.delMsg)
 router.put("/readMsg/:idMsg", auth,userControlle.readMsg)
+router.put("/readMsg/:idNote", auth,userControlle.readNote)
 router.put("/readBugMsg/:idBugMsg", auth,userControlle.readBugMsg)
 router.put("/favs/:favBookID", auth,userControlle.favs)
-router.post("/imgUpload", auth, userControlle.imgUpload)
 router.get("/checkToken", auth, userControlle.checkToken)
 
 module.exports = router;
