@@ -20,8 +20,6 @@ const createSchema = new mongoose.Schema({
 
     dilivered_count: Number,
 
-    hide: Boolean,
-
     created_at: {
         type: Date,
         default: Date.now

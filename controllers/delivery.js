@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose")
 const { deliveryModel, validatedelivery, validateDelivery } = require("../models/deliverySchema")
 
 exports.getAll = async (req, res) => {
@@ -10,34 +11,37 @@ exports.getAll = async (req, res) => {
     }
 }
 
-exports.srch = async (req, res) => {
+// exports.srch = async (req, res) => {
 
-    try {
+//     try {
 
-        let regularEXP = new RegExp(req.body, "i")
+//         let regularEXP = new RegExp(req.body, "i")
 
-        let resualt = await deliveryModel.find()
-        .populate(
-            {path: "bookID"}
-        )
-        .populate(
-            {path: "ownerID"}
-        )
-        .populate(
-            {path: "interestedUsersID"}
-        )
-        res.status(200).json(resualt)
+//         let resualt = await deliveryModel.find()
+//         .populate(
+//             {path: "bookID"}
+//         )
+//         .populate(
+//             {path: "ownerID"}
+//         )
+//         .populate(
+//             {path: "interestedUsersID"}
+//         )
+//         res.status(200).json(resualt)
 
-    } catch (err) {
-        console.log("error srch => ", err);
-        res.status(500).json(err)
-    }
-}
+//     } catch (err) {
+//         console.log("error srch => ", err);
+//         res.status(500).json(err)
+//     }
+// }
 
 exports.create = async (req, res) => {
     try {
-        let deliver = await deliveryModel.create(req.body)
-        res.status(200).json(deliver)
+        let newDelivery = await deliveryModel.create(req.body)
+        // let updateNewInterested = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { interestedUsersID: req.body.userID } })
+
+        // res.status(200).json(newDelivery, updateNewInterested)
+        res.status(200).json(newDelivery)
     }
     catch (err) {
         res.status(500).json(err)
@@ -46,12 +50,20 @@ exports.create = async (req, res) => {
 
 exports.addInerested = async (req, res) => {
     try {
+        //         let isDeliveryExist = await deliveryModel.findOne({interestedUsersID:req.params.userID})
+        // if (isDeliveryExist){
         let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { interestedUsersID: req.params.userID } })
+        if (data.matchedCount == 0)
+            res.status(400).json("not exist", data)
+        if (data.modifiedCount == 0)
+            res.status(400).json("not change", data)
+
         res.status(200).json(data)
+
     }
     catch (err) {
-        res.status(500).json(err)
-    }
+    res.status(500).json(err)
+}
 }
 
 exports.removeInerested = async (req, res) => {
