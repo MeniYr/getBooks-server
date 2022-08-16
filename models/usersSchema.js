@@ -28,7 +28,12 @@ const createSchema = new mongoose.Schema({
             type: mongoose.SchemaTypes.ObjectId,
             ref: "users"
         },
-        notify: String,
+        date: Date,
+        bookID: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "books"
+        },
+        isRead: Boolean,
     }],
     whish_List: [],
     msg: [{

@@ -155,12 +155,12 @@ exports.addMsg = async (req, res) => {
 
 exports.addNotification = async (req, res) => {
     try {
-        let user = req.tokenData._id;
+        // let user = req.tokenData._id;
         let toUser = req.params.idToUser
-        console.log("user=>", user);
+        // console.log("user=>", user);
         console.log("toUser=>",toUser);
         
-        req.body.fromUser = user;
+        // req.body.fromUser = user;
         req.body.date = new Date()
         req.body.isRead = false;
         console.log("body=>",req.body);
