@@ -2,7 +2,7 @@ const { UsersModel, signUp_validate, signIn_validate, genToken, edit_validate } 
 const bcrypt = require("bcrypt");
 const path = require("path");
 
-
+// gets
 exports.getUsers = async (req, res) => {
 
     try {
@@ -27,10 +27,6 @@ exports.getUser = async (req, res) => {
     }
 }
 
-exports.checkToken = async (req, res) => {
-    res.json({ status: "ok", role: req.tokenData.role })
-}
-
 exports.userInfo = async (req, res) => {
     try {
         let user = await UsersModel.find({ _id: req.tokenData._id }, { password: 0 })
@@ -41,17 +37,7 @@ exports.userInfo = async (req, res) => {
     }
 }
 
-exports.editUserInfo = async (req, res) => {
-    try {
-        console.log(req.body);
-        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, req.body)
-        res.status(201).json(data)
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ msg: "server problem" })
-    }
-}
-
+// auth user
 exports.signUp = async (req, res) => {
 
     let userVal = signUp_validate(req.body)
@@ -76,41 +62,6 @@ exports.signUp = async (req, res) => {
 
 }
 
-//upload user profile image
-// exports.imgUpload = async (req, res) => {
-//     try {
-//         let file = req.files.myFile;
-//         if (file.size > (5 * 1024 * 1024))
-//             res.status(400).json({ msg: "the file  is too big, please upload max 5 mb" })
-
-//         const exts_ar = [".jpg", ".JPG", ".jpeg", ".png", ".gif", ".svg", "..jfif"]
-//         if (!exts_ar.includes(path.extname(file.name)))
-//             res.status(400).json({ msg: "please send image file only with the type`s jpg or png" })
-
-//         // let savedPicName = "/users_img/" + req.params.idUser + path.extname(file.name);
-//         let savedPicName = "/62d8f4afa97d18c96a328dca" + path.extname(file.name);
-
-//         file.mv("profilePic" + savedPicName, async function (err) {
-//             if (err) {
-//                 console.error(err)
-//                 return res.status(400).json({ msg: "picture are not valid" });
-//             }
-
-//             //let data = await UsersModel.updateOne({ _id: req.params.idUser, user_id: req.tokenData._id }, { image: savedPicName })
-//             let data = await UsersModel.updateOne({ _id: "62d8f4afa97d18c96a328dca" }, { image: savedPicName })
-
-//             res.json({ msg: "file upload", data })
-//         })
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ msg: "server problem" })
-//     }
-
-
-// }
-
-// C:\HTML\getsBook_project\server\profilePic\62d8f4afa97d18c96a328dca.jpg
-
 exports.logIn = async (req, res) => {
 
     try {
@@ -121,8 +72,6 @@ exports.logIn = async (req, res) => {
         }
 
         let user = await UsersModel.findOne({ email: req.body.email });
-        let theNameExist = await UsersModel.findOne({ name: req.body.name });
-        // let user = theMailExist ? theMailExist : theNameExist;
         if (!user) {
             return res.status(403).json({ msg: "wrong user or password" })
         }
@@ -131,8 +80,6 @@ exports.logIn = async (req, res) => {
             return res.status(403).json({ msg: "wrong user or password" })
         }
 
-        // if (!(user && thePassExist))
-        // console.log(user)
         let token = genToken(user._id, user.role)
         res.json({ token, user: { name: user.name, role: user.role, userID: user._id } })
     }
@@ -141,6 +88,22 @@ exports.logIn = async (req, res) => {
         res.status(500).json({ msg: "server problem" });
     }
 
+}
+
+exports.checkToken = async (req, res) => {
+    res.json({ status: "ok", role: req.tokenData.role })
+}
+
+// updates
+exports.editUserInfo = async (req, res) => {
+    try {
+        console.log(req.body);
+        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, req.body)
+        res.status(201).json(data)
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ msg: "server problem" })
+    }
 }
 
 exports.updateUser = async (req, res) => {
@@ -168,6 +131,7 @@ exports.updateUser = async (req, res) => {
 
 }
 
+// adds
 exports.addMsg = async (req, res) => {
     try {
 
@@ -191,15 +155,17 @@ exports.addMsg = async (req, res) => {
 
 exports.addNotification = async (req, res) => {
     try {
-
         let user = req.tokenData._id;
-        let toUser = req.params.toUserID
+        let toUser = req.params.idToUser
+        console.log("user=>", user);
+        console.log("toUser=>",toUser);
         
         req.body.fromUser = user;
         req.body.date = new Date()
         req.body.isRead = false;
+        console.log("body=>",req.body);
 
-        let data = await UsersModel.updateOne({ _id: toUser }, { $push: { msg: req.body } })
+        let data = await UsersModel.updateOne({ _id: toUser }, { $push:{ notifications: req.body} })
 
 
         res.status(200).json(data)
@@ -208,22 +174,6 @@ exports.addNotification = async (req, res) => {
         res.status(500).json({ msg: "server problem" })
 
     }
-}
-
-exports.deleteUser = async (req, res) => {
-
-    try {
-        let idDel = req.params.idDel;
-        let data = await UsersModel.deleteOne({ _id: idDel })
-
-        res.status(200).json(data);
-    }
-    catch (err) {
-        res.status(500).json({ err_msg: "There is probelm , try again later" })
-
-    }
-
-
 }
 
 exports.addBugMsg = async (req, res) => {
@@ -243,6 +193,23 @@ exports.addBugMsg = async (req, res) => {
     }
 }
 
+// deletes
+exports.deleteUser = async (req, res) => {
+
+    try {
+        let idDel = req.params.idDel;
+        let data = await UsersModel.deleteOne({ _id: idDel })
+
+        res.status(200).json(data);
+    }
+    catch (err) {
+        res.status(500).json({ err_msg: "There is probelm , try again later" })
+
+    }
+
+
+}
+
 exports.delMsg = async (req, res) => {
     try {
         let delId = req.params.idDel;
@@ -257,6 +224,8 @@ exports.delMsg = async (req, res) => {
     }
 }
 
+
+// reades
 exports.readMsg = async (req, res) => {
     try {
         let idMsg = req.params.idMsg;
@@ -273,7 +242,7 @@ exports.readMsg = async (req, res) => {
     }
 }
 
-exports.readNote = async (req, res) => {
+exports.readNotify = async (req, res) => {
     try {
         let idNote = req.params.idNote;
         let user = await UsersModel.updateOne(
