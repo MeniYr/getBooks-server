@@ -50,9 +50,13 @@ exports.create = async (req, res) => {
 
 exports.addInerested = async (req, res) => {
     try {
-        //         let isDeliveryExist = await deliveryModel.findOne({interestedUsersID:req.params.userID})
-        // if (isDeliveryExist){
-        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $push: { interestedUsersID: req.params.userID } })
+        let exist = await deliveryModel.find({ bookID: req.params.bookID }, { interestedUsersID: req.tokenData._id })
+        if (exist.length>0) {
+            console.log(exist);
+            return res.status(409).json("כבר רשום")
+        }
+
+        let data = await deliveryModel.updateOne({ book_ID: req.params.bookID }, { $push: { interestedUsersID: req.tokenData._id } })
         if (data.matchedCount == 0)
             res.status(400).json("not exist", data)
         if (data.modifiedCount == 0)
@@ -62,14 +66,17 @@ exports.addInerested = async (req, res) => {
 
     }
     catch (err) {
-    res.status(500).json(err)
-}
+        res.status(500).json(err)
+    }
 }
 
 exports.removeInerested = async (req, res) => {
-    let delId = req.params.delID;
+    let book_ID = req.params.bookID;
+    console.log(req.tokenData._id);
     try {
-        let data = await UsersModel.updateOne({ _id: req.tokenData._id }, { $pull: { interestedUsersID: { _id: delId } } })
+
+
+        let data = await deliveryModel.updateOne({ bookID: book_ID }, { $pull: { interestedUsersID: req.tokenData._id } })
         res.status(200).json(data)
     }
     catch (err) {
