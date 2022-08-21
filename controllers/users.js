@@ -7,6 +7,23 @@ exports.getUsers = async (req, res) => {
 
     try {
         let users = await UsersModel.find({}, { password: 0 })
+        .populate(
+            {
+                path: "notifications",
+                populate:{
+                    path: "fromUserId"
+             }
+            }
+        )
+        .populate(
+            {
+                path: "notifications",
+                populate:({
+                    path: "bookID"
+                    
+             })
+            }
+        )
         res.json(users)
     } catch (err) {
         console.error(err.message);
@@ -20,6 +37,25 @@ exports.getUser = async (req, res) => {
     try {
         console.log("req.params: ", req.params.idUser);
         let user = await UsersModel.findOne({ _id: req.params.idUser }, { password: 0 })
+            .populate(
+                {
+                    path: "notifications",
+                    populate:{
+                        path: "bookID",
+                        path: "fromUserId"
+                        
+                 }
+                }
+            )
+            .populate(
+                {
+                    path: "notifications",
+                    populate:{
+                        path: "bookID"
+                 }
+                }
+            )
+
         res.json(user)
     } catch (err) {
         console.error(err.message);
@@ -158,14 +194,14 @@ exports.addNotification = async (req, res) => {
         // let user = req.tokenData._id;
         let toUser = req.params.idToUser
         // console.log("user=>", user);
-        console.log("toUser=>",toUser);
-        
+        console.log("toUser=>", toUser);
+
         // req.body.fromUser = user;
         req.body.date = new Date()
         req.body.isRead = false;
-        console.log("body=>",req.body);
+        console.log("body=>", req.body);
 
-        let data = await UsersModel.updateOne({ _id: toUser }, { $push:{ notifications: req.body} })
+        let data = await UsersModel.updateOne({ _id: toUser }, { $push: { notifications: req.body } })
 
 
         res.status(200).json(data)

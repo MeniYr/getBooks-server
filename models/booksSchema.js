@@ -12,10 +12,6 @@ const createSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: "users"
     },
-    interestedBooks:[{
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "books"
-    }],
 
     cat_id: {
         type: mongoose.SchemaTypes.ObjectId,
