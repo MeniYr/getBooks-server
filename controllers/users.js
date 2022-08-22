@@ -1,6 +1,7 @@
 const { UsersModel, signUp_validate, signIn_validate, genToken, edit_validate } = require("../models/usersSchema");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const { response } = require("express");
 
 // gets
 exports.getUsers = async (req, res) => {
@@ -108,16 +109,16 @@ exports.logIn = async (req, res) => {
         }
 
         let user = await UsersModel.findOne({ email: req.body.email });
-        // console.log(user);
+        console.log(user);
 
-        if (!user) {
-             res.status(401).json({ msg: "wrong user or password" })
-        }
-        let thePassExist =await bcrypt.compare(req.body.password, user.password);
-        console.log(thePassExist, req.body.password, user.password);
-        if (!thePassExist) {
-             res.status(401).json({ msg: "wrong user or password" })
-        }
+        if (!user) 
+            return res.status(401).json({ msg: "wrong user or password" })
+        
+        const thePassExist = await bcrypt.compare(req.body.password, user.password)
+        console.log(thePassExist, "body:",req.body.password, user.password);
+        if (!thePassExist) 
+            return res.status(401).json({ msg: "wrong user or password" })
+        
 
         let token = genToken(user._id, user.role)
         res.json({ token, user: { name: user.name, role: user.role, userID: user._id } })
