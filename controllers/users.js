@@ -108,12 +108,15 @@ exports.logIn = async (req, res) => {
         }
 
         let user = await UsersModel.findOne({ email: req.body.email });
+        // console.log(user);
+
         if (!user) {
-            return res.status(403).json({ msg: "wrong user or password" })
+             res.status(401).json({ msg: "wrong user or password" })
         }
-        let thePassExist = bcrypt.compare(req.body.password, user.password);
+        let thePassExist =await bcrypt.compare(req.body.password, user.password);
+        console.log(thePassExist, req.body.password, user.password);
         if (!thePassExist) {
-            return res.status(403).json({ msg: "wrong user or password" })
+             res.status(401).json({ msg: "wrong user or password" })
         }
 
         let token = genToken(user._id, user.role)
