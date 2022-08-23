@@ -81,7 +81,7 @@ exports.srchBooks = async (req, res) => {
 
 exports.addMsg = async (req, res) => {
     try {
-
+console.log("add msg book");
         let bookID = req.params.bookID;
         let fromUser = req.tokenData._id;
 
