@@ -7,6 +7,6 @@ router.get("/",auth,deliveryControle.getAll)
 router.post("/create",auth,deliveryControle.create)
 // router.post("/srch/",deliveryControle.srch)
 router.patch("/addInterestedID/:bookID",auth,deliveryControle.addInerested)
-// router.patch("/delInterestedID/:bookID",auth,deliveryControle.removeInerested)
+router.patch("/readMsg/:idBook",auth,deliveryControle.changeOwner)
 router.delete("/del/:delID",auth,deliveryControle.deleteDelevery)
 module.exports = router;
