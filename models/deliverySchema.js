@@ -12,6 +12,10 @@ const createSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: "users"
     },
+    userToDeliverID: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "users"
+    },
 
     interestedUsersID: [{
         type: mongoose.SchemaTypes.ObjectId,
