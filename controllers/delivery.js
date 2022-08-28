@@ -64,22 +64,21 @@ exports.addInerested = async (req, res) => {
   }
 };
 
-exports.changeUserOnBookAndOwner = async (req, res) => {
+exports.complateDelivery = async (req, res) => {
   try {
     let idBook = req.params.idBook;
     const preBook = await BooksModel.findOne({ _id: idBook });
-    const preDeliver = await deliveryModel.findOne({ _id: idBook });
+    const preDeliver = await deliveryModel.findOne({ bookID: idBook });
 
-    // change owner in books object
     let book = await BooksModel.updateOne(
       { _id: preBook._id },
-      { $set: { userID: preDeliver.userToDeliverID } }
+      { userID: preDeliver.userToDeliverID, hide: false }
     );
-    // change owner on deliver object
 
+    // change owner on deliver object
     let changeUser = await deliveryModel.updateOne(
-      { bookID: preDeliver._id },
-      { $set: { ownerID: preDeliver.userToDeliverID } }
+      { bookID: preBook._id },
+      { ownerID: preDeliver.userToDeliverID,interestedUsersID:[] }
     );
 
     res.json({ changeUser, book });
@@ -88,17 +87,19 @@ exports.changeUserOnBookAndOwner = async (req, res) => {
     res.status(500).json({ msg: "server problem" });
   }
 };
+
 exports.changeUserToDeliverID = async (req, res) => {
+  console.log("changeUserToDeliverID:", req.body);
   try {
     let idBook = req.body.idBook;
-    let idUserToChange = req.body.idUser;
+    let idToChange = req.body.idUser;
 
     let changeUser = await deliveryModel.updateOne(
       { bookID: idBook },
-      { $set: { idUserToChange: idUserToChange } }
+      { userToDeliverID: idToChange }
     );
-
-    res.json({ changeUser, book });
+    console.log(changeUser);
+    res.json({ changeUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "server problem" });

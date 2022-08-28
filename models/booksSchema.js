@@ -27,6 +27,7 @@ const createSchema = new mongoose.Schema({
   },
   favoriteCount: Number,
   rate: Number,
+  rateQuanity: Number,
   comments: [
     {
       fromUser: {
@@ -46,8 +47,8 @@ exports.BooksModel = mongoose.model("books", createSchema);
 
 exports.validateBook = (_reqBody) => {
   const bookVal = joi.object({
-    name: joi.string().min(1).max(100).required(),
-    author: joi.string().min(1).max(20).required(),
+    name: joi.string().min(1).max(150).required(),
+    author: joi.string().min(1).max(50).required(),
     publishing_year: joi.string().min(1).max(4).allow("", null),
     description: joi.string().min(5).max(5000).allow("", null),
     comments: joi.string().allow("", null),
@@ -56,6 +57,8 @@ exports.validateBook = (_reqBody) => {
     image: joi.string(),
     hide: joi.boolean(),
     userID: joi.string(),
+    rete:joi.number(), 
+    rateQuanity:joi.number(), 
   });
   return bookVal.validate(_reqBody);
 };

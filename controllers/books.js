@@ -5,8 +5,15 @@ const {
 } = require("../models/booksSchema");
 
 exports.getBooks = async (req, res) => {
+  let perPage = req.query.perPage || 10;
+  let page = req.query.page || 1;
+  let cat = req.params.catId;
+
   try {
-    let books = await BooksModel.find({})
+    let findFilter = {};
+    if (cat) findFilter = { cat_id: cat };
+
+    let books = await BooksModel.find(findFilter)
       .populate({ path: "cat_id" })
       .populate({ path: "userID" })
       .populate({
@@ -15,7 +22,10 @@ exports.getBooks = async (req, res) => {
           path: "fromUser",
           select: "name",
         },
-      });
+      })
+      .limit(perPage)
+      .skip((page - 1) * perPage)
+      .sort({ created_at: -1 });
     res.status(200).json(books);
   } catch (err) {
     console.log(err);
@@ -35,6 +45,7 @@ exports.getMyBooks = async (req, res) => {
           select: "name",
         },
       });
+    //   console.log("getMyBooks", books);
     res.status(200).json(books);
   } catch (err) {
     console.log(err);
@@ -140,6 +151,7 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
 exports.swichHide = async (req, res) => {
   try {
     let bookId = req.params.bookId;
@@ -156,7 +168,35 @@ exports.swichHide = async (req, res) => {
         { _id: bookId },
         { $set: { hide: true } }
       );
-    res.json({newBook});
+    res.json({ newBook });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "server problem" });
+  }
+};
+exports.addRate = async (req, res) => {
+  try {
+    console.log(req.body.num);
+    let bookId = req.params.bookID;
+
+    let book = await BooksModel.findOne({ _id: bookId });
+
+    if(book.rate){
+          book.rate = Number((book.rate + req.body.num) / book.rateQuanity + 1)
+    book.rateQuanity = Number(book.rateQuanity + 1)
+    }
+    else{
+      book.rate = req.body.num
+      book.rateQuanity = 1
+    }
+
+
+    console.log(book.rate);
+    console.log(book.rateQuanity);
+
+    await book.save();
+
+    res.json({ book });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "server problem" });
