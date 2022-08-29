@@ -34,7 +34,7 @@ exports.getUsers = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    console.log("req.params: ", req.params.idUser);
+    console.log("getUser => req.params: ", req.params.idUser);
     let user = await UsersModel.findOne(
       { _id: req.params.idUser },
       { password: 0 }
@@ -95,7 +95,7 @@ exports.signUp = async (req, res) => {
     user.password = await bcrypt.hash(req.body.password, 10);
     // user.password = "********"
     await user.save();
-    res.json({user});
+    res.json({ user });
   } catch (e) {
     if (e.code == 11000) {
       return res
@@ -144,7 +144,7 @@ exports.checkToken = async (req, res) => {
 exports.editUserInfo = async (req, res) => {
   try {
     console.log(req.body);
-    req.body.password = await bcrypt.hash(req.body.password, 10)
+    req.body.password = await bcrypt.hash(req.body.password, 10);
     let data = await UsersModel.updateOne({ _id: req.tokenData._id }, req.body);
     res.status(201).json(data);
   } catch (err) {
@@ -199,27 +199,32 @@ exports.addMsg = async (req, res) => {
 
 exports.addNotification = async (req, res) => {
   try {
-    // let user = req.tokenData._id;
     let toUser = req.params.idToUser;
-    // console.log("user=>", user);
-    console.log("toUser=>", toUser);
+
+    console.log("addNotification: toUser=>", toUser);
     let exist = await UsersModel.findOne({
       _id: toUser,
       "notifications.fromUserId": req.body.fromUserId,
       "notifications.bookID": req.body.bookID,
     });
+
     console.log(exist);
-    // req.body.fromUser = user;
-    req.body.date = new Date();
-    req.body.isRead = false;
-    console.log("body=>", req.body);
-    let data;
-    if (!exist) {
-      data = await UsersModel.updateOne(
-        { _id: toUser },
-        { $push: { notifications: req.body } }
-      );
+    console.log("addNotification body=>", req.body);
+    if (exist) {
+      let notifications = exist.notifications;
+      notifications = notifications.filter((item) => {
+        item.fromUserId !== req.body.fromUserId &&
+          item.bookID !== req.body.bookID;
+      });
+    } else {
+      req.body.date = new Date();
+      req.body.isRead = false;
+      exist.notifications.unshift(req.body);
     }
+    let data = await UsersModel.updateOne(
+      { _id: toUser },
+      { notifications: req.body }
+    );
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -280,7 +285,6 @@ exports.readMsg = async (req, res) => {
       { _id: req.tokenData._id },
       { $set: { "msg.$[elem].isRead": true } },
       { arrayFilters: [{ "elem._id": idMsg }] }
-
     );
     res.status(200).json(user);
   } catch (err) {
@@ -297,7 +301,7 @@ exports.readNotify = async (req, res) => {
       { $set: { "notifications.$[elem].isRead": true } },
       { arrayFilters: [{ "elem._id": idNote }] }
     );
-    res.status(200).json(user);
+    res.json({ user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "server problem" });

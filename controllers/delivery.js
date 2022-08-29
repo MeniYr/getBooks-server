@@ -33,7 +33,7 @@ exports.create = async (req, res) => {
 };
 
 exports.addInerested = async (req, res) => {
-  console.log("book_ID=>", req.params.bookID);
+  console.log("addInerested bookId =>", req.params.bookID);
 
   try {
     let exist = await deliveryModel.findOne({
@@ -53,9 +53,9 @@ exports.addInerested = async (req, res) => {
       let data = await deliveryModel.updateOne(
         { bookID: req.params.bookID },
         { $push: { interestedUsersID: req.tokenData._id } }
-      );
-      if (data.matchedCount == 0) return res.status(400).json(data);
-      if (data.modifiedCount == 0) return res.status(400).json(data);
+        );
+        console.log(data);
+      if (data.matchedCount !== 1) return res.status(400).json(data);
 
       res.json(data);
     }
