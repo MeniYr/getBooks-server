@@ -66,6 +66,7 @@ exports.userInfo = async (req, res) => {
       { _id: req.tokenData._id },
       { password: 0 }
     )
+    // .sort({msg:0})
       .populate({
         path: "notifications",
         populate: {
@@ -77,7 +78,14 @@ exports.userInfo = async (req, res) => {
         populate: {
           path: "bookID",
         },
+      })
+      .populate({
+        path: "msg",
+        populate: {
+          path: "fromUserId",
+        },
       });
+      
     res.json(user[0]);
   } catch (err) {
     console.error(err.message);
