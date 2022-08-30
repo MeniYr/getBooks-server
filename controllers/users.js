@@ -201,30 +201,36 @@ exports.addNotification = async (req, res) => {
   try {
     let toUser = req.params.idToUser;
 
-    console.log("addNotification: toUser=>", toUser);
-    let exist = await UsersModel.findOne({
+    // console.log("addNotification: toUser=>", toUser);
+    let user = await UsersModel.findOne({
       _id: toUser,
-      "notifications.fromUserId": req.body.fromUserId,
-      "notifications.bookID": req.body.bookID,
     });
-
-    console.log(exist);
-    console.log("addNotification body=>", req.body);
-    if (exist) {
-      let notifications = exist.notifications;
-      notifications = notifications.filter((item) => {
-        item.fromUserId !== req.body.fromUserId &&
-          item.bookID !== req.body.bookID;
-      });
-    } else {
+    let notifications = user.notifications;
+    let exist = false;
+    let notifySaved = null;
+    for (let i = 0; i < notifications.length; i++) {
+      if (
+        notifications[i].fromUserId == req.body.fromUserId &&
+        notifications[i].bookID == req.body.bookID
+      ) {
+        notifySaved = notifications[i];
+        notifications = notifications.filter((item) =>
+          item!=notifySaved
+        );
+        console.log("new notifications:", notifications);
+        exist = true;
+        break;
+      }
+    }
+    if (!exist) {
+      console.log("not exist = > ", exist);
       req.body.date = new Date();
       req.body.isRead = false;
-      exist.notifications.unshift(req.body);
+      notifications.push(req.body);
+      console.log("230", notifications);
     }
-    let data = await UsersModel.updateOne(
-      { _id: toUser },
-      { notifications: req.body }
-    );
+
+    let data = await UsersModel.updateOne({ _id: toUser }, { notifications });
     res.json(data);
   } catch (err) {
     console.error(err);
