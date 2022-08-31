@@ -53,8 +53,8 @@ exports.addInerested = async (req, res) => {
       let data = await deliveryModel.updateOne(
         { bookID: req.params.bookID },
         { $push: { interestedUsersID: req.tokenData._id } }
-        );
-        console.log(data);
+      );
+      console.log(data);
       if (data.matchedCount !== 1) return res.status(400).json(data);
 
       res.json(data);
@@ -78,8 +78,32 @@ exports.complateDelivery = async (req, res) => {
     // change owner on deliver object
     let changeUser = await deliveryModel.updateOne(
       { bookID: preBook._id },
-      { ownerID: preDeliver.userToDeliverID,interestedUsersID:[] }
+      { ownerID: preDeliver.userToDeliverID, interestedUsersID: [] }
     );
+
+    res.json({ changeUser, book });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "server problem" });
+  }
+};
+exports.reduceToOpen = async (req, res) => {
+  let bookId = req.body.bookId;
+  let userId = req.body.userId;
+  try {
+    let notChangeDelivery = await deliveryModel.findOne(
+      { bookID: bookId },
+      { ownerID: userId }
+    );
+    if (notChangeDelivery) {
+      let resetInterested = await deliveryModel.updateOne(
+        { bookID: bookId },
+        { interestedUsersID: [] }
+        );
+        let book = await BooksModel.updateOne({ _id: bookId }, { hide: false });
+    }
+
+    // change owner on deliver object
 
     res.json({ changeUser, book });
   } catch (err) {
@@ -107,11 +131,10 @@ exports.changeUserToDeliverID = async (req, res) => {
   }
 };
 
-
-exports.reduceBookToDeliverable = async (req, res) =>{
+exports.reduceBookToDeliverable = async (req, res) => {
   console.log(req);
-  res.json({msg:"reduceBookToDeliverable"})
-}
+  res.json({ msg: "reduceBookToDeliverable" });
+};
 
 exports.deleteDelevery = async (req, res) => {
   let delId = req.params.delID;

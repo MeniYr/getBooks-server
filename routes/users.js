@@ -5,8 +5,6 @@ const { signup_joi } = require("../middleWares/signUp_Joi");
 const router = express.Router();
 
 
-
-
 router.get("/", auth, userControlle.getUsers)
 router.get("/userId/:idUser", auth, userControlle.getUser)
 router.get("/userInfo", auth, userControlle.userInfo)
