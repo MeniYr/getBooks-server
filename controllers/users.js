@@ -66,7 +66,7 @@ exports.userInfo = async (req, res) => {
       { _id: req.tokenData._id },
       { password: 0 }
     )
-    // .sort({msg:0})
+      // .sort({msg:0})
       .populate({
         path: "notifications",
         populate: {
@@ -85,7 +85,7 @@ exports.userInfo = async (req, res) => {
           path: "fromUserId",
         },
       });
-      
+
     res.json(user[0]);
   } catch (err) {
     console.error(err.message);
@@ -188,6 +188,9 @@ exports.addMsg = async (req, res) => {
   try {
     let fromUser = req.tokenData._id;
     let toUser = req.params.toUserID;
+    console.log("addMsg - toUser: ", toUser);
+    console.log("addMsg - fromUser: ", fromUser);
+    console.log("addMsg - req.body: ", req.body);
 
     req.body.fromUserId = fromUser;
     req.body.date = new Date();
@@ -222,9 +225,7 @@ exports.addNotification = async (req, res) => {
         notifications[i].bookID == req.body.bookID
       ) {
         notifySaved = notifications[i];
-        notifications = notifications.filter((item) =>
-          item!=notifySaved
-        );
+        notifications = notifications.filter((item) => item != notifySaved);
         console.log("new notifications:", notifications);
         exist = true;
         break;

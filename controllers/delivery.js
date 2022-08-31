@@ -90,6 +90,7 @@ exports.complateDelivery = async (req, res) => {
 
 exports.changeUserToDeliverID = async (req, res) => {
   console.log("changeUserToDeliverID:", req.body);
+
   try {
     let idBook = req.body.idBook;
     let idToChange = req.body.idUser;
@@ -105,6 +106,12 @@ exports.changeUserToDeliverID = async (req, res) => {
     res.status(500).json({ msg: "server problem" });
   }
 };
+
+
+exports.reduceBookToDeliverable = async (req, res) =>{
+  console.log(req);
+  res.json({msg:"reduceBookToDeliverable"})
+}
 
 exports.deleteDelevery = async (req, res) => {
   let delId = req.params.delID;
