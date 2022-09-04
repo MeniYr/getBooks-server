@@ -222,7 +222,8 @@ exports.addNotification = async (req, res) => {
     for (let i = 0; i < notifications.length; i++) {
       if (
         notifications[i].fromUserId == req.body.fromUserId &&
-        notifications[i].bookID == req.body.bookID
+        notifications[i].bookID == req.body.bookID&&
+        notifications[i].isForDeliver==false
       ) {
         notifySaved = notifications[i];
         notifications = notifications.filter((item) => item != notifySaved);

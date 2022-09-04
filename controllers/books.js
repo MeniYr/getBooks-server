@@ -166,7 +166,7 @@ exports.swichHide = async (req, res) => {
     else
       newBook = await BooksModel.updateOne(
         { _id: bookId },
-        { $set: { hide: true } }
+        { $set: { hide: true, hide_date:new Date() } }
       );
     res.json({ newBook });
   } catch (err) {

@@ -10,6 +10,7 @@ const {
   validateBook,
   BooksModel,
 } = require("../models/booksSchema");
+const { UsersModel } = require("../models/usersSchema");
 
 exports.getAll = async (req, res) => {
   try {
@@ -76,41 +77,64 @@ exports.complateDelivery = async (req, res) => {
     );
 
     // change owner on deliver object
-    let changeUser = await deliveryModel.updateOne(
+    let changeOwner = await deliveryModel.updateOne(
       { bookID: preBook._id },
       { ownerID: preDeliver.userToDeliverID, interestedUsersID: [] }
     );
 
-    res.json({ changeUser, book });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "server problem" });
-  }
-};
-exports.reduceToOpen = async (req, res) => {
-  let bookId = req.body.bookId;
-  let userId = req.body.userId;
-  try {
-    let notChangeDelivery = await deliveryModel.findOne(
-      { bookID: bookId },
-      { ownerID: userId }
-    );
-    if (notChangeDelivery) {
-      let resetInterested = await deliveryModel.updateOne(
-        { bookID: bookId },
-        { interestedUsersID: [] }
-        );
-        let book = await BooksModel.updateOne({ _id: bookId }, { hide: false });
+    let toUser = await UsersModel.findOne({
+      _id: preDeliver.userToDeliverID,
+    });
+
+    let notifications = toUser.notifications;
+    
+    let notify = {
+      fromUserId: req.tokenData._id,
+      date: new Date(),
+      bookID: preBook._id,
+      isForDeliver:true,
+      isRead: false,
     }
 
-    // change owner on deliver object
+    notifications.push(notify)
 
-    res.json({ changeUser, book });
+    let notifyToUser = await UsersModel.updateOne({ _id: preDeliver.userToDeliverID }, { notifications });
+
+
+
+    res.json({ changeOwner, book, notifyToUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "server problem" });
   }
 };
+
+// timer to reduce owner if not deliverd for 1 week
+
+// exports.reduceToOpen = async (req, res) => {
+//   let bookId = req.body.bookId;
+//   let userId = req.body.userId;
+//   try {
+//     let notChangeDelivery = await deliveryModel.findOne(
+//       { bookID: bookId },
+//       { ownerID: userId }
+//     );
+//     if (notChangeDelivery) {
+//       let resetInterested = await deliveryModel.updateOne(
+//         { bookID: bookId },
+//         { interestedUsersID: [] }
+//         );
+//         let book = await BooksModel.updateOne({ _id: bookId }, { hide: false });
+//     }
+
+//     // change owner on deliver object
+
+//     res.json({ changeUser, book });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ msg: "server problem" });
+//   }
+// };
 
 exports.changeUserToDeliverID = async (req, res) => {
   console.log("changeUserToDeliverID:", req.body);

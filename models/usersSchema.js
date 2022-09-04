@@ -34,7 +34,11 @@ const createSchema = new mongoose.Schema({
             ref: "books"
         },
         isRead: Boolean,
-        isForDeliver:Boolean
+        isForDeliver:{
+            type: Boolean,
+            default:false
+
+        }
     }],
     whish_List: [],
     msg: [{

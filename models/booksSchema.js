@@ -25,6 +25,7 @@ const createSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  hide_date: Date,
   favoriteCount: Number,
   rate: Number,
   rateQuanity: Number,
@@ -57,8 +58,8 @@ exports.validateBook = (_reqBody) => {
     image: joi.string(),
     hide: joi.boolean(),
     userID: joi.string(),
-    rete:joi.number(), 
-    rateQuanity:joi.number(), 
+    rete: joi.number(),
+    rateQuanity: joi.number(),
   });
   return bookVal.validate(_reqBody);
 };

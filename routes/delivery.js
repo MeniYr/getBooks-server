@@ -12,5 +12,5 @@ router.patch("/addInterestedID/:bookID",auth,deliveryControle.addInerested)
 router.patch("/changeOwner/:idBook",auth,deliveryControle.complateDelivery)
 router.put("/changeUser",auth,deliveryControle.changeUserToDeliverID)
 router.delete("/del/:delID",auth,deliveryControle.deleteDelevery)
-router.put("/ifNotDeliverd",timeout("120s"))
+// router.put("/ifNotDeliverd",timeout("120s"))
 module.exports = router;
