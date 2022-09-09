@@ -1,3 +1,4 @@
+const { log } = require("npmlog");
 const {
   BooksSchema,
   validateBook,
@@ -8,25 +9,25 @@ exports.getBooks = async (req, res) => {
   let perPage = req.query.perPage || 10;
   let page = req.query.page || 1;
   let cat = req.params.catId;
-
   try {
     let findFilter = {};
     if (cat) findFilter = { cat_id: cat };
-
+    
     let books = await BooksModel.find(findFilter)
-      .populate({ path: "cat_id" })
-      .populate({ path: "userID" })
-      .populate({
-        path: "comments",
-        populate: {
-          path: "fromUser",
-          select: "name",
-        },
-      })
-      .limit(perPage)
-      .skip((page - 1) * perPage)
-      .sort({ created_at: -1 });
-    res.status(200).json(books);
+    .populate({ path: "cat_id" })
+    .populate({ path: "userID" })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "fromUser",
+        select: "name",
+      },
+    })
+    .limit(perPage)
+    .skip((page - 1) * perPage)
+    .sort({ created_at: -1 });
+    console.log("books 28", books);
+    res.json(books);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -69,6 +70,7 @@ exports.srchBooks = async (req, res) => {
           select: "name",
         },
       });
+      console.log(resualt);
     res.status(200).json(resualt);
   } catch (err) {
     console.log("error srch => ", err);

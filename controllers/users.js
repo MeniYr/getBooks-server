@@ -101,7 +101,6 @@ exports.signUp = async (req, res) => {
   try {
     let user = await UsersModel.create(req.body);
     user.password = await bcrypt.hash(req.body.password, 10);
-    // user.password = "********"
     await user.save();
     res.json({ user });
   } catch (e) {

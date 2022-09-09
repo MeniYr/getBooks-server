@@ -1,7 +1,13 @@
-const mongoose = require('mongoose');
-main().catch(err => console.log(err));
+const mongoose = require("mongoose");
+const { config } = require("../secret");
 
-async function main() {
-  await mongoose.connect('mongodb://localhost:27017/get_book',
-  console.log("mongo connected to get_book"));
-}
+  mongoose.connect(`mongodb+srv://${config.userMongo}:${config.passMongo}@cluster0.oesax.mongodb.net/get_book`,{useNewUrlParser: true, useUnifiedTopology: true})
+
+ const db = mongoose.connection;
+ db.on('error', console.error.bind(console, 'connection error:'));
+ db.once('open', ()  => {
+  console.log("server connected to get_book db");
+});
+
+
+module.exports = db

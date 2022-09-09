@@ -14,6 +14,7 @@ const { UsersModel } = require("../models/usersSchema");
 
 exports.getAll = async (req, res) => {
   try {
+    console.log("delivery 17");
     let delivers = await deliveryModel.find();
     res.status(200).json(delivers);
   } catch (err) {
