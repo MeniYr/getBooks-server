@@ -16,8 +16,8 @@ exports.getAll = async (req, res) => {
   try {
     console.log("delivery 17");
     let delivers = await deliveryModel.find();
-    console.log("deliveries 19", delivers);
-    res.json(delivers);
+    console.log("deliveries 19", delivers[0]);
+    res.json(delivers[0]);
   } catch (err) {
     res.status(500).json(err);
   }
