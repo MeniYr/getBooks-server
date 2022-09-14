@@ -5,7 +5,7 @@ const timeout = require('connect-timeout')
 const router = express.Router();
 
 
-router.get("/",auth,deliveryControle.getAll)
+router.get("/all",auth,deliveryControle.getAll)
 router.post("/create",auth,deliveryControle.create)
 // router.post("/srch/",deliveryControle.srch)
 router.patch("/addInterestedID/:bookID",auth,deliveryControle.addInerested)
