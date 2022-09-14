@@ -22,12 +22,10 @@ const whenThereIsMemmoryProblem = () => {
 
 // whenThereIsMemmoryProblem()
 
+require("./db/mongooseConnect")
 
 corsAccessControl(app)
 routesInit(app);
-
-require("./db/mongooseConnect")
-require("dotenv").config();
 
 const server = http.createServer(app);
 let port = process.env.PORT || "3000";
