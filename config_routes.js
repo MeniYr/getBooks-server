@@ -19,7 +19,7 @@ exports.routesInit = (app) => {
 
 exports.corsAccessControl = (app) => {
   app.all('*', (req, res, next) => {
-    console.log("cors",app);
+    // console.log("cors",app);
     if (!req.get('Origin')) return next();
     res.set('Access-Control-Allow-Origin', '*');
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, PATCH");

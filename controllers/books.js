@@ -23,8 +23,8 @@ exports.getBooks = async (req, res) => {
         select: "name",
       },
     })
-    .limit(perPage)
-    .skip((page - 1) * perPage)
+    // .limit(perPage)
+    // .skip((page - 1) * perPage)
     .sort({ created_at: -1 });
     console.log("books 28", books);
     res.json(books);
